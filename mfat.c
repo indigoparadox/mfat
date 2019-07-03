@@ -1,12 +1,10 @@
 
-#include <stdio.h>
-#include <assert.h>
-#include <sys/mman.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <stdint.h>
-#include <sys/stat.h>
+#include "mfat.h"
+#include "disk.h"
 
+#include <assert.h>
+
+/*
 struct mfat_bpb {
    uint8_t  boot_block[3];
    char     banner[8];
@@ -35,94 +33,75 @@ struct mfat_ebpb {
    uint8_t  unused62[448];
    uint16_t boot_sig;
 } __attribute__( (packed) );
-
-/*
-struct mfat_ebpb {
-   struct mfat_bpb bpb;
-   uint32_t sectors_per_fat;
-   uint16_t flags;
-   uint16_t version;
-   uint32_t root_cluster;
-   uint16_t fsinfo_sector;
-   uint16_t backup_boot_sector;
-   uint32_t res_ints[3];
-   uint8_t  drive_num;
-   uint8_t  nt_flags;
-   uint8_t  signature;
-   uint32_t serial;
-   char     label[11];
-   char     system_id[8];
-   uint8_t  boot_code[420];
-   uint16_t boot_sig;
-} __attribute__( (packed) );
 */
 
-uint16_t read_int16_msb_first( uint16_t* num ) {
-   uint16_t out = 0;
-   uint8_t* bytes_ptr = (uint8_t*)num;
-   int i = 0;
-   
-   for( i = 1 ; 0 <= i ; i-- ) {
-      out |= bytes_ptr[i];
-      out <<= 8;
-   }
+#define MFAT_OFFSET_FAT 512
 
+uint8_t  mfat_get_fat_count(           uint8_t dev_idx, uint8_t part_idx ) {
+   return disk_get_byte( dev_idx, part_idx, 16 );
+}
+
+uint16_t mfat_get_bytes_per_sector(    uint8_t dev_idx, uint8_t part_idx ) {
+   uint16_t out = 0;
+   out |= disk_get_byte( dev_idx, part_idx, 12 );
+   out <<= 8;
+   out |= disk_get_byte( dev_idx, part_idx, 11 );
    return out;
 }
 
-int main() {
-   int img_handle = 0;
-   uint8_t* img_map = NULL;
-   struct stat img_stat;
-   struct mfat_ebpb* bpb = NULL;
-   size_t img_size = 0;
-   int i = 0;
+uint8_t  mfat_get_sectors_per_cluster( uint8_t dev_idx, uint8_t part_idx ) {
+   return disk_get_byte( dev_idx, part_idx, 13 );
+}
 
-   stat( "testimg.img", &img_stat );
-   img_size = img_stat.st_size;
+uint16_t mfat_get_sectors_per_fat(     uint8_t dev_idx, uint8_t part_idx ) {
+   uint16_t out = 0;
+   out |= disk_get_byte( dev_idx, part_idx, 23 );
+   out <<= 8;
+   out |= disk_get_byte( dev_idx, part_idx, 22 );
+   return out;
+}
 
-   img_handle = open( "testimg.img", O_RDONLY, 0 );
-   assert( 0 < img_handle );
+uint16_t mfat_get_sectors_per_track(   uint8_t dev_idx, uint8_t part_idx ) {
+   uint16_t out = 0;
+   out |= disk_get_byte( dev_idx, part_idx, 25 );
+   out <<= 8;
+   out |= disk_get_byte( dev_idx, part_idx, 24 );
+   return out;
+}
 
-   img_map = mmap( NULL, img_size, PROT_READ,
-      MAP_PRIVATE | MAP_POPULATE, img_handle, 0 );
-   assert( MAP_FAILED != img_map );
+uint32_t mfat_get_sectors_total(       uint8_t dev_idx, uint8_t part_idx ) {
+   uint32_t out = 0;
+   out |= disk_get_byte( dev_idx, part_idx, 35 );
+   out <<= 8;
+   out |= disk_get_byte( dev_idx, part_idx, 34 );
+   out <<= 8;
+   out |= disk_get_byte( dev_idx, part_idx, 33 );
+   out <<= 8;
+   out |= disk_get_byte( dev_idx, part_idx, 32 );
+   return out;
+}
 
-   close( img_handle );
+uint16_t mfat_get_entries_count(       uint8_t dev_idx, uint8_t part_idx ) {
+   return
+      (mfat_get_sectors_per_fat( dev_idx, part_idx ) *
+      mfat_get_bytes_per_sector( dev_idx, part_idx )) / 2;
+}
 
-   bpb = (struct mfat_ebpb*)img_map;
+uint16_t mfat_get_entry( uint16_t idx,  uint8_t dev_idx, uint8_t part_idx ) {
+   uint16_t out = 0;
+   uint16_t entry_offset = 0;
 
-   printf( "%s\nspc: %d\nres: %d\nspf: %d\n",
-      bpb->bpb.banner, bpb->bpb.sectors_per_cluster,
-      bpb->bpb.reserved_sectors, bpb->bpb.sectors_per_fat );
+   /* Move past the BPB. */
+   entry_offset += MFAT_OFFSET_FAT;
+   entry_offset += (idx * 2);
 
-   assert( 0xeb == bpb->bpb.boot_block[0] );
-   assert( 0x90 == bpb->bpb.boot_block[2] );
-   assert( 512 == bpb->bpb.bytes_per_sector);
-   assert( 4 == bpb->bpb.sectors_per_cluster );
-   assert( 1 == bpb->bpb.reserved_sectors );
-   assert( 2 == bpb->bpb.fat_count );
-   assert( 40 == bpb->bpb.sectors_per_fat );
+   assert( idx <
+      mfat_get_sectors_per_fat( dev_idx, part_idx ) *
+      mfat_get_bytes_per_sector( dev_idx, part_idx ) );
 
-   printf( "%5ld   ", sizeof( struct mfat_ebpb ) );
-   for(
-      i = sizeof( struct mfat_ebpb );
-      bpb->bpb.sectors_per_fat * bpb->bpb.bytes_per_sector > i;
-      i += 2
-   ) {
-      printf( "%02x%02x ", img_map[i], img_map[i + 1] );
-      if(
-         0 == (i - sizeof( struct mfat_ebpb )) % 20 &&
-         2 != (i - sizeof( struct mfat_ebpb ))
-      ) {
-         printf( "\n%5d   ", i + 2 );
-      }
-   } 
-
-   printf( "\n" );
-
-   munmap( img_map, img_size );
-   
-   return 0;
+   out |= disk_get_byte( dev_idx, part_idx, entry_offset + 1 );
+   out <<= 8;
+   out |= disk_get_byte( dev_idx, part_idx, entry_offset );
+   return out;
 }
 
