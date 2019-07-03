@@ -3,6 +3,7 @@
 #include "disk.h"
 
 #include <assert.h>
+#include <stdbool.h>
 
 /*
 struct mfat_bpb {
@@ -103,5 +104,57 @@ uint16_t mfat_get_entry( uint16_t idx,  uint8_t dev_idx, uint8_t part_idx ) {
    out <<= 8;
    out |= disk_get_byte( dev_idx, part_idx, entry_offset );
    return out;
+}
+
+uint16_t mfat_get_root_dir_offset( uint8_t dev_idx, uint8_t part_idx ) {
+   uint16_t dir_offset = 0;
+
+   dir_offset += MFAT_OFFSET_FAT;
+   dir_offset += (mfat_get_bytes_per_sector( dev_idx, part_idx ) *
+      mfat_get_sectors_per_fat( dev_idx, part_idx ) *
+      mfat_get_fat_count( dev_idx, part_idx ));
+   
+   return dir_offset;
+}
+
+uint16_t mfat_get_dir_entry_offset(
+   char name[11], uint16_t dir_offset, uint8_t dev_idx, uint8_t part_idx
+) {
+   uint16_t offset_out = dir_offset;
+   int i = 0;
+   bool found = false;
+   
+   while(
+      !found &&
+      0 != disk_get_byte( dev_idx, part_idx, offset_out )
+   ) {
+      for( i = 0 ; 8 > i ; i++ ) {
+         /* TODO: cmp entry name with target. */
+      }
+   }
+
+   return offset_out;
+}
+
+void mfat_get_dir_entry_name(
+   char buffer[11], uint16_t offset, uint8_t dev_idx, uint8_t part_idx
+) {
+   int8_t i = 0;
+
+   for( i = 0 ; 11 > i ; i++ ) {
+      buffer[i] = disk_get_byte( dev_idx, part_idx, offset + i );
+   }
+}
+
+uint8_t mfat_get_dir_entry_attrib(
+   uint16_t offset, uint8_t dev_idx, uint8_t part_idx
+) {
+   return disk_get_byte( dev_idx, part_idx, offset + 11 );
+}
+
+uint8_t mfat_get_dir_entry_cluster(
+   uint16_t cluster_idx, uint16_t entry_offset, uint8_t dev_idx, uint8_t part_idx
+) {
+   return 0;
 }
 

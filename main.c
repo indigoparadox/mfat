@@ -13,7 +13,6 @@ int main() {
    int img_handle = 0;
    uint8_t* img_map = NULL;
    struct stat img_stat;
-   //struct mfat_ebpb* bpb = NULL;
    size_t img_size = 0;
    int i = 0;
 
@@ -29,17 +28,12 @@ int main() {
    close( img_handle );
    disk_set_ptr( 0, img_map );
 
-   //bpb = (struct mfat_ebpb*)img_map;
-
    printf( "spc: %d\nspf: %d\n",
       mfat_get_sectors_per_cluster( 0, 0 ),
       mfat_get_sectors_per_fat( 0, 0 ) );
 
-   //assert( 0xeb == bpb->bpb.boot_block[0] );
-   //assert( 0x90 == bpb->bpb.boot_block[2] );
    assert( 512 == mfat_get_bytes_per_sector( 0, 0 ) );
    assert( 4 == mfat_get_sectors_per_cluster( 0, 0 ) );
-   //assert( 1 == bpb->bpb.reserved_sectors );
    assert( 2 == mfat_get_fat_count( 0, 0 ) );
    assert( 40 == mfat_get_sectors_per_fat( 0, 0 ) );
 
