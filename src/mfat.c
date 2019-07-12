@@ -37,17 +37,13 @@ static
 #endif /* CHECK */
 uint16_t mfat_get_reserved_sectors( uint8_t dev_idx, uint8_t part_idx ) {
    uint16_t out = 0;
-   out |= disk_get_byte( dev_idx, part_idx, 15 );
-   out <<= 8;
-   out |= disk_get_byte( dev_idx, part_idx, 14 );
+   mbytesin_read_big_endian_u16( dev_idx, part_idx, 14, &out );
    return out;
 }
 
 uint16_t mfat_get_bytes_per_sector( uint8_t dev_idx, uint8_t part_idx ) {
    uint16_t out = 0;
-   out |= disk_get_byte( dev_idx, part_idx, 12 );
-   out <<= 8;
-   out |= disk_get_byte( dev_idx, part_idx, 11 );
+   mbytesin_read_big_endian_u16( dev_idx, part_idx, 11, &out );
 #ifdef DEBUG_TEST_IMG
    assert( 512 == out );
 #endif /* DEBUG_TEST_IMG */
@@ -71,9 +67,7 @@ static
 #endif /* CHECK */
 uint16_t mfat_get_sectors_per_fat( uint8_t dev_idx, uint8_t part_idx ) {
    uint16_t out = 0;
-   out |= disk_get_byte( dev_idx, part_idx, 23 );
-   out <<= 8;
-   out |= disk_get_byte( dev_idx, part_idx, 22 );
+   mbytesin_read_big_endian_u16( dev_idx, part_idx, 22, &out );
 #ifdef DEBUG_TEST_IMG
    assert( 52 == out );
 #endif /* DEBUG_TEST_IMG */
@@ -94,9 +88,7 @@ uint16_t mfat_get_root_dir_entries_count(
    uint8_t dev_idx, uint8_t part_idx
 ) {
    uint16_t out = 0;
-   out |= disk_get_byte( dev_idx, part_idx, 18 );
-   out <<= 8;
-   out |= disk_get_byte( dev_idx, part_idx, 17 );
+   mbytesin_read_big_endian_u16( dev_idx, part_idx, 17, &out );
 #ifdef DEBUG_TEST_IMG
    assert( 512 == out );
 #endif /* DEBUG_TEST_IMG */
@@ -105,13 +97,7 @@ uint16_t mfat_get_root_dir_entries_count(
 
 uint32_t mfat_get_sectors_total( uint8_t dev_idx, uint8_t part_idx ) {
    uint32_t out = 0;
-   out |= disk_get_byte( dev_idx, part_idx, 35 );
-   out <<= 8;
-   out |= disk_get_byte( dev_idx, part_idx, 34 );
-   out <<= 8;
-   out |= disk_get_byte( dev_idx, part_idx, 33 );
-   out <<= 8;
-   out |= disk_get_byte( dev_idx, part_idx, 32 );
+   mbytesin_read_big_endian_u32( dev_idx, part_idx, 32, &out );
    return out;
 }
 
@@ -210,9 +196,7 @@ uint16_t mfat_get_fat_entry(
 
    assert( cluster_idx < mfat_get_entries_count( dev_idx, part_idx ) );
 
-   out |= disk_get_byte( dev_idx, part_idx, entry_offset + 1 );
-   out <<= 8;
-   out |= disk_get_byte( dev_idx, part_idx, entry_offset );
+   mbytesin_read_big_endian_u16( dev_idx, part_idx, entry_offset, &out );
 
    return out;
 }
@@ -334,9 +318,7 @@ uint16_t mfat_get_dir_entry_first_cluster_idx(
    FILEPTR_T entry_offset, uint8_t dev_idx, uint8_t part_idx
 ) {
    uint16_t out = 0;
-   out |= disk_get_byte( dev_idx, part_idx, entry_offset + 27 );
-   out <<= 8;
-   out |= disk_get_byte( dev_idx, part_idx, entry_offset + 26 );
+   mbytesin_read_big_endian_u16( dev_idx, part_idx, entry_offset + 26, &out );
    return out;
 }
 
@@ -482,13 +464,7 @@ uint32_t mfat_get_dir_entry_size(
    FILEPTR_T offset, uint8_t dev_idx, uint8_t part_idx
 ) {
    uint32_t out = 0;
-   out |= disk_get_byte( dev_idx, part_idx, offset + 31 );
-   out <<= 8;
-   out |= disk_get_byte( dev_idx, part_idx, offset + 30 );
-   out <<= 8;
-   out |= disk_get_byte( dev_idx, part_idx, offset + 29 );
-   out <<= 8;
-   out |= disk_get_byte( dev_idx, part_idx, offset + 28 );
+   mbytesin_read_big_endian_u32( dev_idx, part_idx, offset + 28, &out );
    return out;
 }
 
