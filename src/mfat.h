@@ -45,7 +45,7 @@ uint32_t mfat_get_dir_entry_size(
 uint8_t mfat_get_dir_entry_attrib(
    FILEPTR_T offset, uint8_t dev_idx, uint8_t part_idx );
 
-#ifdef USE_DISK_RW
+#ifndef USE_DISK_RO
 
 FILEPTR_T mfat_get_dir_entry_free_offset(
    FILEPTR_T dir_offset, uint32_t dir_sz, uint8_t dev_idx, uint8_t part_idx );
@@ -59,7 +59,7 @@ void mfat_set_dir_entry_size(
 void mfat_set_dir_entry_attrib(
    uint8_t attrib, FILEPTR_T offset, uint8_t dev_idx, uint8_t part_idx );
 
-#endif /* USE_DISK_RW */
+#endif /* !USE_DISK_RO */
 
 #endif /* MFAT_H */
 
