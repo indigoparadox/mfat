@@ -13,6 +13,7 @@
    srunner_free( sr_ ## suite_name );
 
 main_add_test_proto( mfat )
+main_add_test_proto( mext2 )
 
 #define SYSTEM_RUNNING 0
 uint8_t g_system_state = SYSTEM_RUNNING;
@@ -21,6 +22,7 @@ int main( void ) {
    int number_failed = 0;
 
    main_add_test( mfat );
+   main_add_test( mext2 );
 
    return( number_failed == 0 ) ? 0 : 1;
 }

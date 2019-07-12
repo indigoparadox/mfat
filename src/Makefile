@@ -1,8 +1,8 @@
 
 # vim: ft=make noexpandtab
 
-OBJECTS := mfat.o mbr.o mext2.o
-OBJECTS_TESTS := check.o check_mfat.o
+OBJECTS := mfat.o mbr.o mext2.o mbytesin.o
+OBJECTS_TESTS := check.o check_mfat.o check_mext2.o
 
 BINDIR_LINUX = ../bin/linux
 BINDIR_MSP430G2553 = ../bin/msp430g2553
@@ -50,6 +50,10 @@ $(BINDIR_MSP430G2553)/libmfat.a: $(addprefix ../obj/msp430g2553/,$(OBJECTS))
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 ../obj/linux/check_mfat.o: ../tests/check_mfat.c
+	$(MD) $(OBJDIR)
+	$(CC) -c -o $@ $< $(CFLAGS)
+
+../obj/linux/check_mext2.o: ../tests/check_mext2.c
 	$(MD) $(OBJDIR)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
