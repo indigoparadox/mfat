@@ -43,9 +43,6 @@ uint16_t mfat_get_reserved_sectors( uint8_t dev_idx, uint8_t part_idx ) {
    return out;
 }
 
-#ifndef CHECK
-static
-#endif /* CHECK */
 uint16_t mfat_get_bytes_per_sector( uint8_t dev_idx, uint8_t part_idx ) {
    uint16_t out = 0;
    out |= disk_get_byte( dev_idx, part_idx, 12 );

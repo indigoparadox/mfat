@@ -48,7 +48,10 @@ $(BINDIR_MSP430G2553)/libmfat.a: $(addprefix ../obj/msp430g2553/,$(OBJECTS))
 	$(MD) $(OBJDIR)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-.PHONY: clean
+.PHONY: clean docs
+
+docs:
+	doxygen doxyfile
 
 clean:
 	rm -rf ../obj; \
