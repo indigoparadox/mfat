@@ -74,5 +74,6 @@ docs:
 clean:
 	rm -rf ../obj; \
 	rm -f test_mfat; \
-	rm -rf ../bin
+	rm -rf ../bin; \
+	rm -rf ../doc
 
