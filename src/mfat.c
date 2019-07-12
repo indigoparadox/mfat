@@ -1,10 +1,7 @@
 
-#ifndef __ELOS__
-#include <stdio.h>
-#endif /* __ELOS__ */
-
 #include "mfat.h"
 #include "disk.h"
+#include "mbytesin.h"
 
 #ifdef ALPHA_PRESENT
 #include "alpha.h"
@@ -12,8 +9,11 @@
 
 #ifdef DEBUG
 #include <assert.h>
-#include <stdio.h>
+#ifdef __ELOS__
 #include "console.h"
+#else
+#include <stdio.h>
+#endif /* __ELOS__ */
 #else
 #define assert( x )
 #endif /* DEBUG */

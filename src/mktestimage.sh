@@ -28,16 +28,15 @@ for i in {1..10000}; do
    echo $i >> $COUNT_NAME
 done
 
-cp -v "$COUNT_NAME" "$IMAGE_DIR"
 mcopy -i "$IMAGE_NAME" $COUNT_NAME ::
-rm "$COUNT_NAME"
+mv -v "$COUNT_NAME" "$IMAGE_DIR"
 
 # Create small text file.
 echo "Creating fox file..."
 rm -f fox.txt
 echo "The quick brown fox." > fox.txt
-mv fox.txt "$TEST_DIR_NAME"
-rm -f fox.txt
+mcopy -i "$IMAGE_NAME" fox.txt ::
+mv -v fox.txt "$IMAGE_DIR"
 
 # Make test directory.
 rm -rf "$TEST_DIR_NAME"
