@@ -11,13 +11,13 @@
  *  @{
  */
 
-#define MFAT_ATTRIB_RO     0x01
-#define MFAT_ATTRIB_HIDDEN 0x02
-#define MFAT_ATTRIB_SYSTEM 0x04
-#define MFAT_ATTRIB_VOL_ID 0x08
-#define MFAT_ATTRIB_DIR    0x10
-#define MFAT_ATTRIB_ARC    0x20
-#define MFAT_ATTRIB_LFN    0x0f
+#define MFAT_ATTRIB_RO     0x01  /*!< \brief Read-Only */
+#define MFAT_ATTRIB_HIDDEN 0x02  /*!< \brief Hidden */
+#define MFAT_ATTRIB_SYSTEM 0x04  /*!< \brief System */
+#define MFAT_ATTRIB_VOL_ID 0x08  /*!< \brief Volume ID */
+#define MFAT_ATTRIB_DIR    0x10  /*!< \brief Directory */
+#define MFAT_ATTRIB_ARC    0x20  /*!< \brief Archive */
+#define MFAT_ATTRIB_LFN    0x0f  /*!< \brief Long Filename Entry */
 
 /*! @} */
 
@@ -62,7 +62,7 @@ FILEPTR_T mfat_get_root_dir_offset( uint8_t dev_idx, uint8_t part_idx );
 
 /*! @} */
 
-/*! \addtogroup mfat_dir Directory Entry Information
+/*! \addtogroup mfat_dir FAT Directory Entry Information
  *  \brief Access information for a specified directory entry.
  *  @{
  */
