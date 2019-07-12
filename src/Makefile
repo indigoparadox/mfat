@@ -13,7 +13,8 @@ $(BINDIR_LINUX)/libmfat.a: OBJDIR := ../obj/linux
 $(BINDIR_LINUX)/libmfat.a: CFLAGS += \
 	-DCHECK \
 	-DCHECK_FAT_CONSISTENCY \
-	-DCHECK_LONG_DATA
+	-DCHECK_LONG_DATA \
+	-DDEBUG
 
 $(BINDIR_MSP430G2553)/libmfat.a: OBJDIR := ../obj/msp430g2553
 $(BINDIR_MSP430G2553)/libmfat.a: AR := msp430-ar

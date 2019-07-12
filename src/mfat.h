@@ -4,13 +4,7 @@
 
 /*! \file mfat.h */
 
-#include <stdint.h>
-
-/*! \brief An offset (in bytes) to a directory entry on disk. This will
- *         generally be used as a file "handle" for the rest of the library.
- *         Offsets for directories should point to the first directory entry.
- */
-typedef uint32_t FILEPTR_T;
+#include "mfatdef.h"
 
 /*! \addtogroup mfat_attrib FAT Attributes
  *  \brief Possible values composing the FAT attribute byte.

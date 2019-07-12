@@ -51,17 +51,21 @@ START_TEST( test_mfat_bpb ) {
    uint32_t root_dir_entries_count = 0;
    uint32_t data_offset = 0;
    //uint32_t cluster_count = 0;
+   uint32_t root_dir_offset_est = 0;
 
    ck_assert_uint_eq( 512, mfat_get_bytes_per_sector( 0, 0 ) );
    ck_assert_uint_eq( 4  , mfat_get_sectors_per_cluster( 0, 0 ) );
    ck_assert_uint_eq( 2  , mfat_get_fat_count( 0, 0 ) );
-   ck_assert_uint_eq( 20 , mfat_get_sectors_per_fat( 0, 0 ) );
+   ck_assert_uint_eq( 52 , mfat_get_sectors_per_fat( 0, 0 ) );
 
    root_dir_entries_count = mfat_get_root_dir_entries_count( 0, 0 );
    ck_assert_uint_eq( 512, root_dir_entries_count );
 
    root_dir_start = mfat_get_root_dir_offset( 0, 0 );
-   ck_assert_uint_eq( 512 * 2 * 20, root_dir_start );
+   root_dir_offset_est = 
+      (512 * 1) + /* Sector Size * Reserved Sectors */
+      (512 * 52 * 2);  /* Sector Size * Sectors Per FAT * 2 FATs */
+   ck_assert_uint_eq( root_dir_offset_est, root_dir_start );
 
    data_offset = root_dir_start + (root_dir_entries_count * 32);
    ck_assert_uint_eq( data_offset, mfat_get_data_area_offset( 0, 0 ) );
@@ -118,9 +122,10 @@ START_TEST( test_mfat_cluster_data ) {
 
    /* Grab the root directory and find the test file. */
    entry_offset = mfat_get_root_dir_offset( 0, 0 );
-   entry_offset = mfat_get_dir_entry_first_offset( entry_offset, 0, 0 );
+   ck_assert_uint_gt( entry_offset, 0 );
    entry_offset = mfat_get_dir_entry_offset(
       g_data_filename, g_data_filename_len, entry_offset, 0, 0 );
+   ck_assert_uint_gt( entry_offset, 0 );
    file_size = mfat_get_dir_entry_size( entry_offset, 0, 0 );
 
    ck_assert_int_lt( (g_test_sz * _i), file_size );
