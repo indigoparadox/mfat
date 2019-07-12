@@ -1,7 +1,7 @@
 
-#include "code16.h"
-
-#ifdef USE_DISK
+#ifndef __ELOS__
+#include <stdio.h>
+#endif /* __ELOS__ */
 
 #include "mfat.h"
 #include "disk.h"
@@ -501,7 +501,7 @@ uint8_t mfat_get_dir_entry_attrib(
    return disk_get_byte( dev_idx, part_idx, offset + 11 );
 }
 
-#ifdef USE_DISK_RW
+#ifndef USE_DISK_RO
 
 FILEPTR_T mfat_get_dir_entry_free_offset(
    FILEPTR_T dir_offset, uint32_t dir_sz, uint8_t dev_idx, uint8_t part_idx
@@ -512,7 +512,9 @@ FILEPTR_T mfat_get_dir_entry_free_offset(
    /* Hunt for the first free entry. */
    entry_id = disk_get_byte( dev_idx, part_idx, dir_offset );
    while( dir_offset < dir_end ) {
+#ifdef MFAT_DATA_DEBUG
       printf( "offset: %4x eid: %2x\n", dir_offset, entry_id );
+#endif /* MFAT_DATA_DEBUG */
       if( 0xe5 == entry_id || 0x00 == entry_id ) {
          return dir_offset;
       }
@@ -588,7 +590,5 @@ void mfat_set_dir_entry_attrib(
    disk_set_byte( attrib, dev_idx, part_idx, offset + 11 );
 }
 
-#endif /* USE_DISK_RW */
-
-#endif /* USE_DISK */
+#endif /* !USE_DISK_RO */
 
