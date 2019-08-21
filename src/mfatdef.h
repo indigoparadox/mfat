@@ -2,7 +2,9 @@
 #ifndef MFATDEF_H
 #define MFATDEF_H
 
+#ifndef NO_STD_HEADERS
 #include <stdint.h>
+#endif /* NO_STD_HEADERS */
 
 /*! \file mfatdef.h */
 
