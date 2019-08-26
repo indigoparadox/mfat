@@ -113,3 +113,9 @@ uint16_t mext2_get_bgd_dir_count(
    return out;
 }
 
+uint32_t mext2_get_inode( uint32_t inode, uint8_t dev_idx, uint8_t part_idx ) {
+   uint32_t bg = 0;
+   
+   bg = (inode - 1) / mext2_get_inodes_per_group( dev_idx, part_idx );
+}
+

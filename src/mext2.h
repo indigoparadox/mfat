@@ -83,5 +83,7 @@ uint16_t mext2_get_bgd_dir_count(
 
 /*! @} */
 
+uint32_t mext2_get_inode( uint32_t inode, uint8_t dev_idx, uint8_t part_idx );
+
 #endif /* MEXT2_H */
 
