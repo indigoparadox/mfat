@@ -4,3 +4,7 @@ mfat.depend
 mfat.layout
 testimg.*
 *.o
+CMakeFiles
+Makefile
+build
+cmake_install.cmake
