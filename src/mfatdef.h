@@ -13,6 +13,7 @@
  *         Offsets for directories should point to the first directory entry.
  */
 typedef uint32_t FILEPTR_T;
+typedef int64_t SFILEPTR_T;
 
 typedef uint32_t INODE_T;
 
